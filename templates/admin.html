@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Welfare Secretary AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #202124;
+        }
+
+        .header {
+            background: #fff;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .admin-icon {
+            width: 32px;
+            height: 32px;
+            background: #ea4335;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #202124;
+        }
+
+        .status-card {
+            border-left: 4px solid #34a853;
+        }
+
+        .upload-card {
+            border-left: 4px solid #4285f4;
+        }
+
+        .status-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .status-label {
+            font-size: 0.75rem;
+            color: #5f6368;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .upload-area {
+            border: 2px dashed #dadce0;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #4285f4;
+            background: #f8f9fa;
+        }
+
+        .upload-area.dragover {
+            border-color: #4285f4;
+            background: #e8f0fe;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #5f6368;
+        }
+
+        .upload-text {
+            font-size: 1.125rem;
+            color: #202124;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.875rem;
+            color: #5f6368;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .upload-button:hover {
+            background: #1557b0;
+        }
+
+        .upload-button:disabled {
+            background: #dadce0;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e8eaed;
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4285f4;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #e8f5e8;
+            color: #137333;
+            border: 1px solid #ceead6;
+        }
+
+        .message.error {
+            background: #fce8e6;
+            color: #d93025;
+            border: 1px solid #f9dedc;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="admin-icon">A</div>
+            <h1>Admin Panel</h1>
+        </div>
+        <a href="/" class="back-link">← Back to Chat</a>
+    </div>
+
+    <div class="container">
+        <div class="card status-card">
+            <h2>📊 Data Status</h2>
+            <div id="statusInfo">
+                <p>Loading status...</p>
+            </div>
+        </div>
+
+        <div class="card upload-card">
+            <h2>📁 Upload Excel File</h2>
+            <p style="margin-bottom: 1.5rem; color: #5f6368;">
+                Upload a new Excel file to update the welfare committee data. The AI will automatically process the new data.
+            </p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drop your Excel file here</div>
+                <div class="upload-subtext">or click to browse (.xlsx, .xls files only)</div>
+                <button class="upload-button" id="browseButton">Choose File</button>
+            </div>
+            
+            <input type="file" class="file-input" id="fileInput" accept=".xlsx,.xls">
+            
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseButton = document.getElementById('browseButton');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const message = document.getElementById('message');
+
+        // Load initial status
+        loadStatus();
+
+        // File upload handlers
+        uploadArea.addEventListener('click', () => fileInput.click());
+        browseButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/data-status');
+                const data = await response.json();
+                
+                const statusInfo = document.getElementById('statusInfo');
+                
+                if (data.loaded) {
+                    const lastModified = data.last_modified ? 
+                        new Date(data.last_modified * 1000).toLocaleString() : 'Unknown';
+                    
+                    statusInfo.innerHTML = `
+                        <div class="status-info">
+                            <div class="status-item">
+                                <div class="status-label">Status</div>
+                                <div class="status-value">✅ Loaded</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-label">Total Rows</div>
+                                <div class="status-value">${data.rows}</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-label">Columns</div>
+                                <div class="status-value">${data.columns.length}</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-label">Last Updated</div>
+                                <div class="status-value">${lastModified}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusInfo.innerHTML = `
+                        <div class="status-info">
+                            <div class="status-item">
+                                <div class="status-label">Status</div>
+                                <div class="status-value">❌ No Data</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1rem; color: #ea4335;">Please upload an Excel file to enable the AI.</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading status:', error);
+            }
+        }
+
+        async function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.xls')) {
+                showMessage('Please select an Excel file (.xlsx or .xls)', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show progress
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            browseButton.disabled = true;
+            browseButton.textContent = 'Uploading...';
+
+            try {
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                }, 200);
+
+                const response = await fetch('/api/upload-excel', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`✅ ${data.message} (${data.rows} rows processed)`, 'success');
+                    setTimeout(() => {
+                        loadStatus();
+                    }, 1000);
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`❌ Upload failed: ${error.message}`, 'error');
+            } finally {
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    browseButton.disabled = false;
+                    browseButton.textContent = 'Choose File';
+                }, 1000);
+            }
+        }
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
