@@ -21,8 +21,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_community.vectorstores import FAISS
-from langchain_classic.chains import RetrievalQA
-from langchain_classic.prompts import PromptTemplate
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 
 app = Flask(__name__)
 CORS(app)
