@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Welfare Secretary AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -214,17 +216,18 @@
             .container {
                 padding: 0 0.5rem;
             }
-            
+
             .card {
                 padding: 1.5rem;
             }
-            
+
             .upload-area {
                 padding: 2rem 1rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="header-content">
@@ -245,22 +248,23 @@
         <div class="card upload-card">
             <h2>📁 Upload Excel File</h2>
             <p style="margin-bottom: 1.5rem; color: #5f6368;">
-                Upload a new Excel file to update the welfare committee data. The AI will automatically process the new data.
+                Upload a new Excel file to update the welfare committee data. The AI will automatically process the new
+                data.
             </p>
-            
+
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
                 <div class="upload-text">Drop your Excel file here</div>
                 <div class="upload-subtext">or click to browse (.xlsx, .xls files only)</div>
                 <button class="upload-button" id="browseButton">Choose File</button>
             </div>
-            
+
             <input type="file" class="file-input" id="fileInput" accept=".xlsx,.xls">
-            
+
             <div class="progress-bar" id="progressBar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            
+
             <div class="message" id="message"></div>
         </div>
     </div>
@@ -311,13 +315,13 @@
             try {
                 const response = await fetch('/api/data-status');
                 const data = await response.json();
-                
+
                 const statusInfo = document.getElementById('statusInfo');
-                
+
                 if (data.loaded) {
-                    const lastModified = data.last_modified ? 
+                    const lastModified = data.last_modified ?
                         new Date(data.last_modified * 1000).toLocaleString() : 'Unknown';
-                    
+
                     statusInfo.innerHTML = `
                         <div class="status-info">
                             <div class="status-item">
@@ -411,11 +415,12 @@
             message.textContent = text;
             message.className = `message ${type}`;
             message.style.display = 'block';
-            
+
             setTimeout(() => {
                 message.style.display = 'none';
             }, 5000);
         }
     </script>
 </body>
+
 </html>
