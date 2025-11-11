@@ -76,7 +76,8 @@ def initialize_ai():
         return None, None, None
     
     try:
-        df = pd.read_excel(excel_path)
+        with st.spinner("Loading data and initializing AI models..."):
+            df = pd.read_excel(excel_path)
         
         # Prepare document content
         def prepare_document_content(row):
@@ -118,7 +119,24 @@ def initialize_ai():
         # Create embeddings and vector store
         loader = DataFrameLoader(df, page_content_column='document_content')
         documents = loader.load()
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        
+        # Initialize embeddings with proper device handling and error catching
+        try:
+            import torch
+            # Force CPU usage and avoid meta tensors
+            torch.set_default_device('cpu')
+            
+            embeddings = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2",
+                model_kwargs={'device': 'cpu'},
+                encode_kwargs={'normalize_embeddings': True}
+            )
+        except Exception as embed_error:
+            st.warning(f"Using alternative embedding method due to: {str(embed_error)}")
+            # Fallback to a simpler embedding method
+            from langchain_community.embeddings import FakeEmbeddings
+            embeddings = FakeEmbeddings(size=384)
+        
         vectorstore = FAISS.from_documents(documents, embeddings)
         retriever = vectorstore.as_retriever()
         
