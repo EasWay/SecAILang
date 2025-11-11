@@ -22,38 +22,217 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 st.set_page_config(
     page_title="Welfare Secretary AI",
     page_icon="🏛️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 
-# Custom CSS
+# Custom CSS - Dark Mode Theme
 st.markdown("""
 <style>
+    /* Main app background */
+    .stApp {
+        background-color: #0a0a0a;
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #1a1a1a;
+        border-right: 1px solid #333;
+    }
+    
+    /* Main header */
     .main-header {
         text-align: center;
-        padding: 1rem 0;
-        background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
-        color: white;
-        border-radius: 10px;
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+        color: #ffffff;
+        border-radius: 15px;
         margin-bottom: 2rem;
+        border: 1px solid #404040;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
+    
+    .main-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #ffffff, #b0b0b0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .main-header p {
+        color: #a0a0a0;
+        font-size: 1.1rem;
+    }
+    
+    /* Chat message containers */
     .chat-message {
-        padding: 1rem;
-        margin: 0.5rem 0;
-        border-radius: 10px;
-        border-left: 4px solid #4285f4;
-        background-color: #f8f9fa;
+        padding: 1.25rem;
+        margin: 1rem 0;
+        border-radius: 12px;
+        border-left: 4px solid;
+        animation: fadeIn 0.3s ease-in;
     }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
     .user-message {
-        background-color: #e3f2fd;
-        border-left-color: #1976d2;
+        background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+        border-left-color: #808080;
+        color: #ffffff;
+        border: 1px solid #404040;
     }
+    
     .ai-message {
-        background-color: #f1f8e9;
-        border-left-color: #388e3c;
+        background: linear-gradient(135deg, #1f1f1f, #151515);
+        border-left-color: #ffffff;
+        color: #e0e0e0;
+        border: 1px solid #333333;
+    }
+    
+    .message-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .user-label {
+        color: #a0a0a0;
+    }
+    
+    .ai-label {
+        color: #ffffff;
+    }
+    
+    .message-content {
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+        color: #ffffff;
+        border: 1px solid #505050;
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #3d3d3d, #2a2a2a);
+        border-color: #707070;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Download buttons */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, #404040, #2d2d2d);
+        color: #ffffff;
+        border: 1px solid #606060;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .stDownloadButton > button:hover {
+        background: linear-gradient(135deg, #505050, #3d3d3d);
+        border-color: #808080;
+    }
+    
+    /* Input field */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border: 1px solid #404040;
+        border-radius: 8px;
+    }
+    
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #808080;
+        box-shadow: 0 0 0 1px #808080;
+    }
+    
+    /* Chat input */
+    .stChatInput > div {
+        background-color: #1a1a1a;
+        border: 1px solid #404040;
+        border-radius: 12px;
+    }
+    
+    .stChatInput input {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    /* File uploader */
+    .stFileUploader {
+        background-color: #1a1a1a;
+        border: 1px dashed #505050;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    /* Success/Warning/Error messages */
+    .stSuccess {
+        background-color: #1a2a1a;
+        color: #90ee90;
+        border: 1px solid #2d4d2d;
+    }
+    
+    .stWarning {
+        background-color: #2a2a1a;
+        color: #ffa500;
+        border: 1px solid #4d4d2d;
+    }
+    
+    .stError {
+        background-color: #2a1a1a;
+        color: #ff6b6b;
+        border: 1px solid #4d2d2d;
+    }
+    
+    /* Spinner */
+    .stSpinner > div {
+        border-color: #ffffff transparent transparent transparent;
+    }
+    
+    /* Markdown text */
+    .stMarkdown {
+        color: #e0e0e0;
+    }
+    
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+    }
+    
+    /* Divider */
+    hr {
+        border-color: #333333;
+    }
+    
+    /* Quick action section */
+    .quick-actions {
+        background: linear-gradient(135deg, #1f1f1f, #151515);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #333333;
+        margin-top: 2rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -295,34 +474,74 @@ st.markdown('<div class="main-header"><h1>🏛️ Welfare Secretary AI</h1><p>Yo
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
+# Sidebar
+st.sidebar.title("⚙️ Settings")
+st.sidebar.markdown("---")
+
 # File upload section
-st.sidebar.header("📁 Data Management")
+st.sidebar.subheader("📁 Data Management")
 uploaded_file = st.sidebar.file_uploader("Upload Excel File", type=['xlsx', 'xls'])
 if uploaded_file is not None:
     # Save uploaded file
     with open("SECRETARY FORM(1-6).xlsx", "wb") as f:
         f.write(uploaded_file.getbuffer())
-    st.sidebar.success("File uploaded successfully!")
+    st.sidebar.success("✅ File uploaded!")
     # Clear cache to reload data
     st.cache_resource.clear()
 
+st.sidebar.markdown("---")
+
+# Status information
+st.sidebar.subheader("📊 System Status")
+report_chain, normal_chain, df = initialize_ai()
+if df is not None:
+    st.sidebar.success(f"✅ Data loaded: {len(df)} records")
+    st.sidebar.info(f"📝 Columns: {len(df.columns)}")
+else:
+    st.sidebar.warning("⚠️ No data loaded")
+    st.sidebar.info("Upload Excel file and set GOOGLE_API_KEY in secrets")
+
+# Chat container
+chat_container = st.container()
+
 # Display chat messages
-for message in st.session_state.messages:
-    with st.container():
+with chat_container:
+    if len(st.session_state.messages) == 0:
+        st.markdown("""
+        <div style='text-align: center; padding: 3rem 1rem; color: #808080;'>
+            <h2 style='color: #ffffff;'>👋 Welcome!</h2>
+            <p style='font-size: 1.1rem; margin-top: 1rem;'>
+                Start a conversation by typing a message below or use the quick actions.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    for idx, message in enumerate(st.session_state.messages):
         if message["role"] == "user":
-            st.markdown(f'<div class="chat-message user-message"><strong>You:</strong> {message["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="chat-message user-message">
+                <div class="message-label user-label">You</div>
+                <div class="message-content">{message["content"]}</div>
+            </div>
+            ''', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="chat-message ai-message"><strong>AI:</strong> {message["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="chat-message ai-message">
+                <div class="message-label ai-label">🏛️ Welfare Secretary AI</div>
+                <div class="message-content">{message["content"]}</div>
+            </div>
+            ''', unsafe_allow_html=True)
             
             # Add download buttons for AI responses
-            col1, col2, col3 = st.columns([1, 1, 4])
+            col1, col2, col3 = st.columns([1, 1, 6])
             with col1:
                 pdf_data = create_pdf_download(message["content"])
                 st.download_button(
                     label="📄 PDF",
                     data=pdf_data,
                     file_name=f"welfare_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                    mime="application/pdf"
+                    mime="application/pdf",
+                    key=f"pdf_{idx}"
                 )
             with col2:
                 docx_data = create_docx_download(message["content"])
@@ -330,44 +549,61 @@ for message in st.session_state.messages:
                     label="📝 Word",
                     data=docx_data,
                     file_name=f"welfare_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    key=f"docx_{idx}"
                 )
 
-# Chat input
-if prompt := st.chat_input("Ask about welfare committee activities..."):
+# Quick Actions Section
+st.markdown('<div class="quick-actions">', unsafe_allow_html=True)
+st.markdown("### ⚡ Quick Actions")
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("📊 Generate Welfare Report", use_container_width=True):
+        query = "Generate a comprehensive welfare report"
+        st.session_state.messages.append({"role": "user", "content": query})
+        with st.spinner("🤔 AI is thinking..."):
+            response = generate_response(query)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
+    
+    if st.button("💰 Financial Summary", use_container_width=True):
+        query = "What are the total finances collected?"
+        st.session_state.messages.append({"role": "user", "content": query})
+        with st.spinner("🤔 AI is thinking..."):
+            response = generate_response(query)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
+
+with col2:
+    if st.button("📅 Recent Events", use_container_width=True):
+        query = "Tell me about recent events"
+        st.session_state.messages.append({"role": "user", "content": query})
+        with st.spinner("🤔 AI is thinking..."):
+            response = generate_response(query)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
+    
+    if st.button("🤝 Meeting Summaries", use_container_width=True):
+        query = "What meetings have been held?"
+        st.session_state.messages.append({"role": "user", "content": query})
+        with st.spinner("🤔 AI is thinking..."):
+            response = generate_response(query)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Chat input at the bottom
+st.markdown("---")
+prompt = st.chat_input("💬 Ask about welfare committee activities...")
+
+if prompt:
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     
     # Get AI response
-    with st.spinner("AI is thinking..."):
+    with st.spinner("🤔 AI is thinking..."):
         response = generate_response(prompt)
         st.session_state.messages.append({"role": "assistant", "content": response})
     
     st.rerun()
-
-# Suggestion buttons
-st.markdown("### Quick Actions")
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("📊 Generate Welfare Report"):
-        st.session_state.messages.append({"role": "user", "content": "Generate a comprehensive welfare report"})
-        st.rerun()
-    if st.button("💰 Financial Summary"):
-        st.session_state.messages.append({"role": "user", "content": "What are the total finances collected?"})
-        st.rerun()
-
-with col2:
-    if st.button("📅 Recent Events"):
-        st.session_state.messages.append({"role": "user", "content": "Tell me about recent events"})
-        st.rerun()
-    if st.button("🤝 Meeting Summaries"):
-        st.session_state.messages.append({"role": "user", "content": "What meetings have been held?"})
-        st.rerun()
-
-# Status information
-st.sidebar.header("📊 Status")
-report_chain, normal_chain, df = initialize_ai()
-if df is not None:
-    st.sidebar.success(f"✅ Data loaded: {len(df)} records")
-else:
-    st.sidebar.warning("⚠️ No data loaded. Please upload Excel file and set GOOGLE_API_KEY.")
