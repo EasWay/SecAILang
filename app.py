@@ -436,7 +436,23 @@ def test():
         'is_report': True
     })
 
+def find_free_port():
+    """Find and return a free port"""
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+    return port
+
 if __name__ == '__main__':
     import os
-    port = int(os.environ.get('PORT', 9999))
+    # Try to use environment PORT first, otherwise find a free port
+    if 'PORT' in os.environ:
+        port = int(os.environ.get('PORT'))
+    else:
+        port = find_free_port()
+    
+    print(f"Starting Flask app on port {port}")
+    print(f"Access your app at: http://localhost:{port}")
     app.run(host='0.0.0.0', port=port, debug=False)
