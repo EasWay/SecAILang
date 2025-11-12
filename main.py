@@ -16,8 +16,9 @@ api_key = os.getenv("GOOGLE_API_KEY")
 # --- Initialization ---
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro",
-    temperature=0.7,
-    google_api_key=api_key
+    temperature=0.3,  # Lower temperature for more focused, factual responses
+    google_api_key=api_key,
+    max_output_tokens=2048
 )
 
 # Load Excel data
@@ -84,25 +85,46 @@ retriever = vectorstore.as_retriever()
 
 # --- Prompt Templates ---
 report_template = """
-You are the Welfare Committee Secretary.
-Using ONLY the information provided, write a comprehensive and expressive report
-in the first person, covering activities, meetings, events, and finances.
-Make it flow naturally and sound human—formal but simple, intelligent, and warm.
-Avoid robotic or AI-sounding language.
+You are the Welfare Committee Secretary writing an official report.
+
+CRITICAL INSTRUCTIONS:
+1. Use ONLY the data provided in the context below - DO NOT use general knowledge or make assumptions
+2. If the context doesn't contain information to answer the question, say "This information is not available in the welfare committee records"
+3. Write in first person as the secretary
+4. Cover ALL items found in the data systematically
+5. Include specific details: names, amounts, dates, locations, attendance numbers, outcomes
+6. Organize the report with clear sections for:
+   - Financial Summary (collections, expenditures, remaining balance)
+   - Events and Activities (with attendance and outcomes)
+   - Meetings (with agendas and decisions)
+   - Issues and Concerns (with descriptions and status)
+7. Use actual numbers and names from the data
+8. Make it formal but readable
 
 User request: {question}
 
-Relevant data:
+Welfare Committee Data:
 {context}
+
+Remember: Only use information from the data above. Do not add general knowledge about welfare committees.
 """
 
 normal_template = """
-Answer this question directly and briefly using only the Welfare Committee data.
+You are the Welfare Committee Secretary answering a specific question.
+
+CRITICAL INSTRUCTIONS:
+1. Use ONLY the data provided in the context below
+2. If the context doesn't contain the answer, say "This information is not available in the welfare committee records"
+3. Be specific and cite actual data (names, amounts, dates, etc.)
+4. Keep your answer brief and focused on the question
+5. DO NOT use general knowledge or make assumptions
 
 User request: {question}
 
-Relevant data:
+Welfare Committee Data:
 {context}
+
+Answer based only on the data above:
 """
 
 report_prompt = PromptTemplate(template=report_template, input_variables=["context", "question"])
