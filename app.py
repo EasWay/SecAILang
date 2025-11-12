@@ -36,7 +36,7 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0.5,  # Balanced for natural, flowing language while staying factual
     google_api_key=api_key,
-    max_output_tokens=3000  # Allow longer, more detailed reports
+    max_output_tokens=4096  # Allow very long, comprehensive reports with all details
 )
 
 # Global variables for data management
@@ -144,30 +144,55 @@ CRITICAL INSTRUCTIONS:
 2. Write in first person as the secretary, using a warm and inclusive tone
 3. Write in flowing paragraphs and essay form - NO bullet points or lists
 4. Make it read like a story that connects all the welfare activities together
-5. Include ALL specific details from the data: names, amounts, dates, locations, attendance, outcomes
+5. Include EVERY SINGLE item from the data - do not skip anything
+6. Mention ALL specific details: names, amounts, dates, locations, attendance, outcomes, descriptions, comments
+7. If there are general updates, announcements, or miscellaneous items, include them all
 
-STRUCTURE YOUR REPORT AS FLOWING PARAGRAPHS:
+STRUCTURE YOUR REPORT AS FLOWING PARAGRAPHS (INCLUDE EVERYTHING):
 
 Opening: Start with a warm introduction about the welfare committee's mission and period covered.
 
-Financial Overview: Write a detailed narrative paragraph about the finances. Mention total collections, how the money was spent, what remains, and what this means for the welfare of members. Make it conversational but include all the numbers.
+Financial Overview: Write a detailed narrative paragraph about EVERY financial transaction. Mention each collection source, every expenditure item, all amounts, and what remains. Include who contributed, what was purchased, and why. Make it conversational but include ALL the numbers and details.
 
-Events and Activities: Write in essay form about each event. Describe what happened, who attended, where it was held, and what outcomes were achieved. Connect the events to show how they contribute to member welfare. Make it feel inclusive and celebratory.
+Events and Activities: Write in essay form about EVERY SINGLE event in the data. For each event, describe:
+- The event name and purpose
+- When and where it was held
+- Who attended (mention attendance numbers and any specific names)
+- What happened during the event
+- Key outcomes and achievements
+- Any comments or feedback
+Do not skip any event, no matter how small.
 
-Meetings and Decisions: Write flowing paragraphs about the meetings held. Discuss the agendas naturally, weave in the decisions made, and explain how these decisions impact the welfare of members. Make it read like you're telling a colleague about important discussions.
+Meetings and Decisions: Write flowing paragraphs about EVERY meeting held. For each meeting:
+- Discuss the full agenda
+- Weave in all decisions made
+- Mention who attended
+- Include any action items or follow-ups
+- Explain how these decisions impact member welfare
+Make it read like you're telling a colleague about important discussions.
 
-Challenges and Progress: If there are issues or concerns in the data, discuss them in a supportive, solution-oriented way. Show empathy and commitment to addressing them.
+General Updates and Announcements: If there are any general updates, announcements, news, or miscellaneous items in the data, discuss them all in a warm, informative way. Don't leave anything out.
+
+Issues, Concerns, and Progress: If there are ANY issues, concerns, problems, or ongoing matters in the data, discuss each one:
+- Describe the issue clearly
+- Mention any progress or status
+- Show empathy and commitment to resolution
+- Include any comments or descriptions
+
+Other Items: If there are ANY other categories or items in the data not covered above, include them all. Check for columns like: updates, notes, remarks, status, progress, or any other information.
 
 Closing: End with a warm, forward-looking statement about the committee's continued commitment to member welfare.
 
 TONE: Warm, professional, inclusive, human, and caring. Avoid corporate jargon. Write as if you're sharing good news with friends while maintaining professionalism.
+
+REMEMBER: Include EVERY SINGLE item from the data. Do not summarize or skip anything. If it's in the data, it must be in your report.
 
 User request: {question}
 
 Welfare Committee Data:
 {context}
 
-Write your report in flowing essay form with connected paragraphs. NO bullet points. Make it human and inclusive.
+Write your report in flowing essay form with connected paragraphs. NO bullet points. Include EVERYTHING from the data.
 """
 
 normal_template = """
