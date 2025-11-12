@@ -33,7 +33,7 @@ api_key = os.getenv("GOOGLE_API_KEY")
 
 # Initialize AI components (same as main.py)
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-pro",
+    model="gemini-2.5-flash",
     temperature=0.5,  # Balanced for natural, flowing language while staying factual
     google_api_key=api_key,
     max_output_tokens=3000  # Allow longer, more detailed reports
