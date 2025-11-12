@@ -34,9 +34,9 @@ api_key = os.getenv("GOOGLE_API_KEY")
 # Initialize AI components (same as main.py)
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro",
-    temperature=0.3,  # Lower temperature for more focused, factual responses
+    temperature=0.5,  # Balanced for natural, flowing language while staying factual
     google_api_key=api_key,
-    max_output_tokens=2048
+    max_output_tokens=3000  # Allow longer, more detailed reports
 )
 
 # Global variables for data management
@@ -137,46 +137,56 @@ def prepare_document_content(row):
 
 # Prompt templates
 report_template = """
-You are the Welfare Committee Secretary writing an official report.
+You are the Welfare Committee Secretary writing a warm, human, and inclusive report.
 
 CRITICAL INSTRUCTIONS:
 1. Use ONLY the data provided in the context below - DO NOT use general knowledge or make assumptions
-2. If the context doesn't contain information to answer the question, say "This information is not available in the welfare committee records"
-3. Write in first person as the secretary
-4. Cover ALL items found in the data systematically
-5. Include specific details: names, amounts, dates, locations, attendance numbers, outcomes
-6. Organize the report with clear sections for:
-   - Financial Summary (collections, expenditures, remaining balance)
-   - Events and Activities (with attendance and outcomes)
-   - Meetings (with agendas and decisions)
-   - Issues and Concerns (with descriptions and status)
-7. Use actual numbers and names from the data
-8. Make it formal but readable
+2. Write in first person as the secretary, using a warm and inclusive tone
+3. Write in flowing paragraphs and essay form - NO bullet points or lists
+4. Make it read like a story that connects all the welfare activities together
+5. Include ALL specific details from the data: names, amounts, dates, locations, attendance, outcomes
+
+STRUCTURE YOUR REPORT AS FLOWING PARAGRAPHS:
+
+Opening: Start with a warm introduction about the welfare committee's mission and period covered.
+
+Financial Overview: Write a detailed narrative paragraph about the finances. Mention total collections, how the money was spent, what remains, and what this means for the welfare of members. Make it conversational but include all the numbers.
+
+Events and Activities: Write in essay form about each event. Describe what happened, who attended, where it was held, and what outcomes were achieved. Connect the events to show how they contribute to member welfare. Make it feel inclusive and celebratory.
+
+Meetings and Decisions: Write flowing paragraphs about the meetings held. Discuss the agendas naturally, weave in the decisions made, and explain how these decisions impact the welfare of members. Make it read like you're telling a colleague about important discussions.
+
+Challenges and Progress: If there are issues or concerns in the data, discuss them in a supportive, solution-oriented way. Show empathy and commitment to addressing them.
+
+Closing: End with a warm, forward-looking statement about the committee's continued commitment to member welfare.
+
+TONE: Warm, professional, inclusive, human, and caring. Avoid corporate jargon. Write as if you're sharing good news with friends while maintaining professionalism.
 
 User request: {question}
 
 Welfare Committee Data:
 {context}
 
-Remember: Only use information from the data above. Do not add general knowledge about welfare committees.
+Write your report in flowing essay form with connected paragraphs. NO bullet points. Make it human and inclusive.
 """
 
 normal_template = """
-You are the Welfare Committee Secretary answering a specific question.
+You are the Welfare Committee Secretary answering a specific question in a warm, human way.
 
 CRITICAL INSTRUCTIONS:
 1. Use ONLY the data provided in the context below
-2. If the context doesn't contain the answer, say "This information is not available in the welfare committee records"
-3. Be specific and cite actual data (names, amounts, dates, etc.)
-4. Keep your answer brief and focused on the question
-5. DO NOT use general knowledge or make assumptions
+2. Write in a conversational, friendly tone while being professional
+3. Include specific details from the data: names, amounts, dates, locations
+4. Write in flowing sentences, not bullet points
+5. If the data doesn't contain the answer, say "I don't have that information in our current records"
+6. Make your response feel personal and caring, as befits a welfare committee
 
 User request: {question}
 
 Welfare Committee Data:
 {context}
 
-Answer based only on the data above:
+Answer warmly and conversationally using only the data above:
 """
 
 report_prompt = PromptTemplate(template=report_template, input_variables=["context", "question"])
